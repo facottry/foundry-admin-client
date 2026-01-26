@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 import ReplyModal from '../components/ReplyModal';
 
@@ -9,7 +9,7 @@ const Messages = () => {
     const [selectedMessage, setSelectedMessage] = useState(null);
     const [showReplyModal, setShowReplyModal] = useState(false);
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         try {
             setLoading(true);
             const params = new URLSearchParams();
@@ -24,11 +24,11 @@ const Messages = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filter]);
 
     useEffect(() => {
         fetchMessages();
-    }, [filter]);
+    }, [fetchMessages]);
 
     const handleReply = (message) => {
         setSelectedMessage(message);
