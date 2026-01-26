@@ -51,6 +51,22 @@ const DashboardAdmin = () => {
         fetchAllKPIs();
     };
 
+    const handleApprove = async (productId) => {
+        try {
+            if (!window.confirm('Are you sure you want to approve this product?')) return;
+
+            // Optimistic UI update could happen here, or just refresh
+            await api.post(`/admin/products/${productId}/approve`);
+
+            // Simple success notification (using alert if no toast lib, but assuming console for now or simple alert)
+            // Ideally use a toast library if available, but for now just refresh
+            fetchAllKPIs();
+        } catch (err) {
+            console.error('Failed to approve product:', err);
+            alert('Failed to approve product. Check console for details.');
+        }
+    };
+
     if (loading && !overview) {
         return (
             <div style={{ padding: '40px', textAlign: 'center' }}>
@@ -158,7 +174,28 @@ const DashboardAdmin = () => {
                                 title="Pending Moderation"
                                 columns={[
                                     { label: 'Product', key: 'name' },
-                                    { label: 'Owner', key: 'owner_user_id', render: (owner) => owner?.name || 'Unknown' }
+                                    { label: 'Owner', key: 'owner_user_id', render: (owner) => owner?.name || 'Unknown' },
+                                    {
+                                        label: 'Action',
+                                        key: '_id',
+                                        render: (id) => (
+                                            <button
+                                                onClick={() => handleApprove(id)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    background: '#10b981',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: '600'
+                                                }}
+                                            >
+                                                Approve
+                                            </button>
+                                        )
+                                    }
                                 ]}
                                 data={moderation?.pendingProducts?.slice(0, 5) || []}
                             />
@@ -263,10 +300,32 @@ const DashboardAdmin = () => {
                                 title="Moderation Queue"
                                 columns={[
                                     { label: 'Product', key: 'name' },
-                                    { label: 'Status', key: 'status' }
+                                    { label: 'Status', key: 'status' },
+                                    {
+                                        label: 'Action',
+                                        key: '_id',
+                                        render: (id) => (
+                                            <button
+                                                onClick={() => handleApprove(id)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    background: '#10b981',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: '600'
+                                                }}
+                                            >
+                                                Approve
+                                            </button>
+                                        )
+                                    }
                                 ]}
                                 data={moderation?.pendingProducts?.slice(0, 10) || []}
                             />
+
                         </div>
                     </>
                 )}
