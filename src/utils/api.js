@@ -1,5 +1,11 @@
 import axios from 'axios';
 
+/**
+ * Purpose: Admin-specific API instance.
+ * Inputs: Requests to VITE_API_BASE_URL_SERVER (Admin API).
+ * Outputs: Response data.
+ * Side Effects: Attaches x-auth-token.
+ */
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api',
     headers: {
