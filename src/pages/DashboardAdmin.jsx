@@ -96,8 +96,8 @@ const DashboardAdmin = () => {
         <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
             {/* Header with Tabs */}
             <div style={{ background: 'white', borderBottom: '1px solid #E5E5E5' }}>
-                <div style={{ padding: '20px 40px', borderBottom: '1px solid #E5E5E5' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '20px 40px', borderBottom: '1px solid #E5E5E5' }} className="container-fluid">
+                    <div className="dashboard-header">
                         <div>
                             <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', color: '#1a1a1a' }}>
                                 Admin Dashboard
@@ -126,7 +126,7 @@ const DashboardAdmin = () => {
                 </div>
 
                 {/* Tab Navigation */}
-                <div style={{ padding: '0 40px', display: 'flex', gap: '8px' }}>
+                <div className="responsive-tab-nav">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -140,7 +140,8 @@ const DashboardAdmin = () => {
                                 fontWeight: activeTab === tab.id ? '600' : '500',
                                 fontSize: '0.95rem',
                                 cursor: 'pointer',
-                                transition: 'all 0.2s'
+                                transition: 'all 0.2s',
+                                whiteSpace: 'nowrap'
                             }}
                         >
                             <span style={{ marginRight: '8px' }}>{tab.icon}</span>
@@ -150,18 +151,18 @@ const DashboardAdmin = () => {
                 </div>
             </div>
 
-            <div style={{ padding: '30px 40px' }}>
+            <div style={{ padding: '30px 40px' }} className="container-fluid">
                 {/* Overview Tab */}
                 {activeTab === 'overview' && (
                     <>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
                             <KpiCard label="Total Users" value={overview?.users?.totalUsers} subtitle={`${overview?.users?.totalFounders || 0} founders, ${overview?.users?.totalCustomers || 0} customers`} />
                             <KpiCard label="Total Products" value={overview?.products?.totalProducts} subtitle={`${overview?.products?.approvedProducts || 0} approved`} />
                             <KpiCard label="Total Clicks" value={traffic?.totalClicks} subtitle={`${traffic?.clicksToday || 0} today`} />
                             <KpiCard label="Revenue (Credits)" value={economics?.revenueEstimate} subtitle={`${economics?.totalCreditsConsumed || 0} consumed`} />
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px' }}>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-10">
                             <StatTable
                                 title="Top Products by Clicks"
                                 columns={[
@@ -170,6 +171,33 @@ const DashboardAdmin = () => {
                                 ]}
                                 data={traffic?.topProducts?.slice(0, 5) || []}
                             />
+                            <StatTable
+                                title="Top Products by Views"
+                                columns={[
+                                    { label: 'Product', key: 'productName' },
+                                    { label: 'Views', key: 'views', align: 'right' }
+                                ]}
+                                data={traffic?.topProductsByViews?.slice(0, 5) || []}
+                            />
+                            <StatTable
+                                title="Top Products by Rating"
+                                columns={[
+                                    { label: 'Product', key: 'name' },
+                                    { label: 'Rating', key: 'avg_rating', align: 'right', render: (val) => val ? val.toFixed(1) : 'N/A' }
+                                ]}
+                                data={overview?.topProductsByRating?.slice(0, 5) || []}
+                            />
+                            <StatTable
+                                title="Recently Launched"
+                                columns={[
+                                    { label: 'Product', key: 'name' },
+                                    { label: 'Date', key: 'created_at', align: 'right', render: (date) => new Date(date).toLocaleDateString() }
+                                ]}
+                                data={overview?.recentlyLaunched?.slice(0, 5) || []}
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: '40px' }}>
                             <StatTable
                                 title="Pending Moderation"
                                 columns={[
@@ -210,7 +238,7 @@ const DashboardAdmin = () => {
                             Platform Health & Performance
                         </h2>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
                             <KpiCard label="Total Clicks" value={traffic?.totalClicks} subtitle="All-time outbound clicks" />
                             <KpiCard label="Clicks Today" value={traffic?.clicksToday} subtitle="Last 24 hours" />
                             <KpiCard label="Clicks (7 Days)" value={traffic?.clicksLast7Days} subtitle="Last week" />
@@ -232,7 +260,7 @@ const DashboardAdmin = () => {
                         <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '16px', color: '#1a1a1a' }}>
                             Campaign Performance
                         </h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
                             <KpiCard label="Active Campaigns" value={campaigns?.activeCampaigns} />
                             <KpiCard label="Paused Campaigns" value={campaigns?.pausedCampaigns} />
                             <KpiCard label="Total Spend" value={campaigns?.totalSpend} subtitle="Credits consumed" />
@@ -259,7 +287,7 @@ const DashboardAdmin = () => {
                             Product & User Analytics
                         </h2>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
                             <KpiCard label="Total Products" value={overview?.products?.totalProducts} />
                             <KpiCard label="Approved" value={overview?.products?.approvedProducts} />
                             <KpiCard label="Pending" value={overview?.products?.pendingProducts} />
@@ -269,7 +297,7 @@ const DashboardAdmin = () => {
                         <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '16px', color: '#1a1a1a' }}>
                             User Breakdown
                         </h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
                             <KpiCard label="Total Users" value={overview?.users?.totalUsers} />
                             <KpiCard label="Founders" value={overview?.users?.totalFounders} subtitle="Product creators" />
                             <KpiCard label="Customers" value={overview?.users?.totalCustomers} subtitle="Browsers" />
@@ -279,14 +307,14 @@ const DashboardAdmin = () => {
                         <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '16px', color: '#1a1a1a' }}>
                             Economics
                         </h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
                             <KpiCard label="Credits Issued" value={economics?.totalCreditsIssued} subtitle="Total granted" />
                             <KpiCard label="Credits Consumed" value={economics?.totalCreditsConsumed} subtitle="Total spent" />
                             <KpiCard label="Paid Topups" value={economics?.paidTopups} subtitle="Revenue credits" />
                             <KpiCard label="Wallets Near Zero" value={economics?.walletsNearZero} subtitle="< 100 credits" />
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                             <StatTable
                                 title="Founders with Lowest Credits"
                                 columns={[

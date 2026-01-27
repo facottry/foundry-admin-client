@@ -23,9 +23,9 @@ const StatTable = ({ title, columns, data, emptyMessage = 'No data available' })
                     {title}
                 </h3>
             </div>
-            <div style={{ padding: '0' }}>
+            <div className="stat-table-wrapper">
                 {data && data.length > 0 ? (
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
                         <thead>
                             <tr style={{ background: '#fafafa', borderBottom: '1px solid #E5E5E5' }}>
                                 {columns.map((col, idx) => (
