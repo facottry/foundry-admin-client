@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 const AdminLogin = () => {
@@ -40,6 +40,9 @@ const AdminLogin = () => {
                 </div>
                 <button type="submit" className="btn btn-primary" style={{ width: '100%', background: '#d32f2f', border: 'none' }}>Admin Login</button>
             </form>
+            <div style={{ marginTop: '15px', textAlign: 'center' }}>
+                <Link to="/forgot-password" style={{ color: '#666', fontSize: '0.9rem' }}>Forgot Password?</Link>
+            </div>
         </div>
     );
 };

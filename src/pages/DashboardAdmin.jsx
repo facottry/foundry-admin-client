@@ -95,8 +95,8 @@ const DashboardAdmin = () => {
     return (
         <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
             {/* Header with Tabs */}
-            <div style={{ background: 'white', borderBottom: '1px solid #E5E5E5' }}>
-                <div style={{ padding: '20px 40px', borderBottom: '1px solid #E5E5E5' }} className="container-fluid">
+            <div style={{ background: 'white', borderBottom: '1px solid #E5E5E5', margin: '-24px -24px 24px -24px' }}>
+                <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E5E5' }}>
                     <div className="dashboard-header">
                         <div>
                             <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', color: '#1a1a1a' }}>
@@ -151,7 +151,7 @@ const DashboardAdmin = () => {
                 </div>
             </div>
 
-            <div style={{ padding: '30px 40px' }} className="container-fluid">
+            <div style={{ padding: '30px 0' }}>
                 {/* Overview Tab */}
                 {activeTab === 'overview' && (
                     <>

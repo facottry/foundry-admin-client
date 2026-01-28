@@ -1,78 +1,53 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, toggleSidebar, logout }) => {
     const location = useLocation();
-    const navigate = useNavigate();
 
-    const sections = [
-        { id: 'dashboard', label: 'Dashboard', icon: '📊', path: '/dashboard' },
-        { id: 'products', label: 'Products', icon: '📦', path: '/products' },
-        { id: 'users', label: 'Users', icon: '👥', path: '/users' },
-        { id: 'traffic', label: 'Traffic', icon: '🚦', path: '/traffic' },
-        { id: 'economics', label: 'Economics', icon: '💰', path: '/economics' },
-        { id: 'campaigns', label: 'Campaigns', icon: '📢', path: '/campaigns' },
-        { id: 'moderation', label: 'Moderation', icon: '⚖️', path: '/moderation' },
-        { id: 'messages', label: 'Messages', icon: '💬', path: '/messages' }
+    const isActive = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`);
+
+    const menuItems = [
+        { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+        { path: '/founders', label: 'Founders', icon: '👥' },
+        { path: '/products', label: 'Products', icon: '📦' },
+        { path: '/messages', label: 'Messages', icon: '✉️' },
+        { path: '/settings', label: 'Settings', icon: '⚙️' },
     ];
 
     return (
-        <div style={{
-            width: '240px',
-            background: '#1a1a1a',
-            minHeight: '100vh',
-            padding: '20px 0',
-            position: 'fixed',
-            left: 0,
-            top: 0
-        }}>
-            <div style={{ padding: '0 20px', marginBottom: '30px' }}>
-                <h2 style={{ color: 'white', fontSize: '1.25rem', margin: 0 }}>Admin Panel</h2>
+        <aside
+            className={`admin-sidebar ${isOpen ? 'open' : ''}`}
+        >
+            <div className="sidebar-header">
+                <Link to="/dashboard" className="brand-logo">Foundry.io</Link>
+                <button className="close-sidebar-btn md:hidden" onClick={toggleSidebar}>×</button>
             </div>
 
-            <nav>
-                {sections.map(section => {
-                    const isActive = location.pathname === section.path;
-                    return (
-                        <button
-                            key={section.id}
-                            onClick={() => navigate(section.path)}
-                            style={{
-                                width: '100%',
-                                padding: '12px 20px',
-                                background: isActive ? '#333' : 'transparent',
-                                border: 'none',
-                                borderLeft: isActive ? '3px solid #fff' : '3px solid transparent',
-                                color: isActive ? '#fff' : '#999',
-                                textAlign: 'left',
-                                cursor: 'pointer',
-                                fontSize: '0.95rem',
-                                fontWeight: isActive ? '600' : '400',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isActive) {
-                                    e.target.style.background = '#222';
-                                    e.target.style.color = '#fff';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isActive) {
-                                    e.target.style.background = 'transparent';
-                                    e.target.style.color = '#999';
-                                }
-                            }}
-                        >
-                            <span style={{ fontSize: '1.2rem' }}>{section.icon}</span>
-                            {section.label}
-                        </button>
-                    );
-                })}
+            <nav className="sidebar-nav">
+                {menuItems.map(item => (
+                    <Link
+                        key={item.path}
+                        to={item.path}
+                        className={`sidebar-link ${isActive(item.path) ? 'active' : ''}`}
+                        onClick={() => window.innerWidth < 768 && toggleSidebar()}
+                    >
+                        <span className="icon">{item.icon}</span>
+                        <span className="label">{item.label}</span>
+                    </Link>
+                ))}
             </nav>
-        </div>
+
+            <div className="sidebar-footer">
+                <Link to="/change-password" className="sidebar-link">
+                    <span className="icon">🔒</span>
+                    <span className="label">Change Password</span>
+                </Link>
+                <button onClick={logout} className="sidebar-link logout-btn">
+                    <span className="icon">🚪</span>
+                    <span className="label">Logout</span>
+                </button>
+            </div>
+        </aside>
     );
 };
 

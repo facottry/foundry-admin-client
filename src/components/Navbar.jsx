@@ -32,6 +32,7 @@ const Navbar = () => {
                             <Link to="/founders" onClick={() => setIsOpen(false)}>Founders</Link>
                             <Link to="/products" onClick={() => setIsOpen(false)}>Products</Link>
                             <Link to="/messages" onClick={() => setIsOpen(false)}>Messages</Link>
+                            <Link to="/change-password" onClick={() => setIsOpen(false)}>Change Password</Link>
                             <button onClick={onLogout} className="btn-link" style={{ marginLeft: '20px' }}>Logout</button>
                         </>
                     ) : (

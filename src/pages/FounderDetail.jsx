@@ -10,7 +10,7 @@ const FounderDetail = () => {
     useEffect(() => {
         const fetchFounder = async () => {
             try {
-                const res = await api.get(`/users/${id}`);
+                const res = await api.get(`/admin/users/${id}`);
                 setFounder(res.data);
             } catch (err) {
                 console.error(err);
@@ -59,14 +59,56 @@ const FounderDetail = () => {
                         <div style={{ fontSize: '0.8rem', color: '#666' }}>Joined</div>
                         <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{new Date(founder.created_at).toLocaleDateString()}</div>
                     </div>
+
+
+                </div>
+            </div >
+
+            <div className="card">
+                <h3>Products Owned</h3>
+                <div className="table-responsive" style={{ marginTop: '16px' }}>
+                    {founder.products && founder.products.length > 0 ? (
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Status</th>
+                                    <th>Clicks</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {founder.products.map(prod => (
+                                    <tr key={prod._id}>
+                                        <td>{prod.name}</td>
+                                        <td>
+                                            <span style={{
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                background: prod.status === 'approved' ? '#dcfce7' : '#fef9c3',
+                                                color: prod.status === 'approved' ? '#166534' : '#854d0e',
+                                                fontSize: '0.85rem',
+                                                fontWeight: '600'
+                                            }}>
+                                                {prod.status}
+                                            </span>
+                                        </td>
+                                        <td>{prod.clicks_lifetime || 0}</td>
+                                        <td>
+                                            <Link to={`/products/${prod._id}`} className="btn btn-sm btn-secondary">
+                                                View Product
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p style={{ color: '#666', fontStyle: 'italic' }}>No products found.</p>
+                    )}
                 </div>
             </div>
-
-            {/* Additional sections for products list could go here, but omitted for brevity in this step 
-                User can view products in the main Products list filtered by founder if we implemented filtering there,
-                or we could list them here.
-            */}
-        </div>
+        </div >
     );
 };
 

@@ -7,15 +7,37 @@ const FoundersList = () => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState(null);
+    const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [sortBy, setSortBy] = useState('created_at');
+    const [sortOrder, setSortOrder] = useState('desc');
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPage(1); // Reset page on search
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [search]);
 
     useEffect(() => {
         fetchFounders();
-    }, [page]);
+    }, [page, debouncedSearch, sortBy, sortOrder]);
 
     const fetchFounders = async () => {
         try {
             setLoading(true);
-            const res = await api.get(`/users?role=FOUNDER&page=${page}&limit=20`);
+            const res = await api.get(`/admin/users`, {
+                params: {
+                    role: 'FOUNDER',
+                    page,
+                    limit: 20,
+                    search: debouncedSearch,
+                    sortBy,
+                    order: sortOrder
+                }
+            });
             setFounders(res.data.users);
             setPagination(res.data.pagination);
         } catch (err) {
@@ -29,7 +51,52 @@ const FoundersList = () => {
 
     return (
         <div className="card">
-            <h2 style={{ marginBottom: '20px' }}>Founders</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+                <h2 style={{ margin: 0 }}>Founders</h2>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <input
+                        type="text"
+                        placeholder="Search founders..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        style={{
+                            padding: '8px 12px',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            width: '240px'
+                        }}
+                    />
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        style={{
+                            padding: '8px 12px',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <option value="created_at">Joined Date</option>
+                        <option value="name">Name</option>
+                        <option value="email">Email</option>
+                        <option value="credits_balance">Balance</option>
+                        <option value="products_count">Products</option>
+                    </select>
+                    <button
+                        onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                        style={{
+                            padding: '8px 12px',
+                            border: '1px solid #ddd',
+                            background: '#f9f9f9',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            minWidth: '40px'
+                        }}
+                    >
+                        {sortOrder === 'asc' ? '↑' : '↓'}
+                    </button>
+                </div>
+            </div>
 
             <div style={{ overflowX: 'auto' }}>
                 <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
