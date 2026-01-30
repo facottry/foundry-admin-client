@@ -13,6 +13,8 @@ import Settings from './pages/Settings';
 import InfrastructureSettings from './pages/InfrastructureSettings';
 import ForgotPassword from './pages/ForgotPassword';
 import ChangePassword from './pages/ChangePassword';
+import Newsletters from './pages/Newsletters';
+import NewsletterEditor from './pages/NewsletterEditor';
 import './index.css';
 
 function App() {
@@ -34,6 +36,9 @@ function App() {
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/settings/infrastructure" element={<Navigate to="/settings" replace />} />
                         <Route path="/change-password" element={<ChangePassword />} />
+
+                        <Route path="/newsletters" element={<Newsletters />} />
+                        <Route path="/newsletters/:id" element={<NewsletterEditor />} /> {/* :id can be 'new' */}
                     </Route>
 
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />

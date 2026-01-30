@@ -10,6 +10,7 @@ const Sidebar = ({ isOpen, toggleSidebar, logout }) => {
         { path: '/dashboard', label: 'Dashboard', icon: '📊' },
         { path: '/founders', label: 'Founders', icon: '👥' },
         { path: '/products', label: 'Products', icon: '📦' },
+        { path: '/newsletters', label: 'Newsletter', icon: '📰' },
         { path: '/messages', label: 'Messages', icon: '✉️' },
         { path: '/settings', label: 'Settings', icon: '⚙️' },
     ];

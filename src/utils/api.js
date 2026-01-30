@@ -41,6 +41,18 @@ api.interceptors.response.use(
             });
         }
 
+        // Handle 401 Unauthorized (Token Invalid/Expired)
+        if (error.response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            // Force reload/redirect to ensure state is cleared. 
+            // Using window.location.href to break out of React Router SPA state immediately.
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+            return Promise.reject({ code: 'UNAUTHORIZED', message: 'Session expired' });
+        }
+
         // Backend returned strictly formatted error: { success: false, error: { code, message } }
         const backendError = error.response.data?.error;
 
