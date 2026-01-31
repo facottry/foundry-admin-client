@@ -11,6 +11,7 @@ const Sidebar = ({ isOpen, toggleSidebar, logout }) => {
         { path: '/founders', label: 'Founders', icon: '👥' },
         { path: '/products', label: 'Products', icon: '📦' },
         { path: '/newsletters', label: 'Newsletter', icon: '📰' },
+        { path: '/personalities', label: 'Bot Personalities', icon: '🤖' },
         { path: '/messages', label: 'Messages', icon: '✉️' },
         { path: '/settings', label: 'Settings', icon: '⚙️' },
     ];
