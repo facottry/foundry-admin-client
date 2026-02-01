@@ -86,8 +86,70 @@ const Personalities = () => {
         setShowModal(true);
     };
 
+    const rexPersonas = personalities.filter(p => !p.type || p.type === 'REX'); // Default to REX if undefined
+    const airaPersonas = personalities.filter(p => p.type === 'AIRA');
+
     if (loading) return <div className="p-6">Loading...</div>;
     if (error) return <div className="p-6 text-red-500">{error}</div>;
+
+    const PersonalityCard = ({ p }) => (
+        <div
+            key={p._id}
+            className={`bg-white rounded-lg shadow p-5 border-2 ${p.isActive ? 'border-green-500' : 'border-transparent'}`}
+        >
+            <div className="flex justify-between items-start mb-3">
+                <div>
+                    <h3 className="text-lg font-semibold">{p.name}</h3>
+                    {p.defaultMode && (
+                        <span className={`text-xs px-2 py-0.5 rounded-full mr-2 ${p.defaultMode === 'mini' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800'}`}>
+                            {p.defaultMode === 'mini' ? 'Mini Mode (Default)' : 'Full Mode (Default)'}
+                        </span>
+                    )}
+                </div>
+                {p.isActive && (
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full whitespace-nowrap">
+                        Active
+                    </span>
+                )}
+            </div>
+
+            <div className="mb-3">
+                <label className="text-xs text-gray-500 uppercase">Greeting</label>
+                <p className="text-sm text-gray-700 line-clamp-2">{p.greeting}</p>
+            </div>
+
+            <div className="mb-4">
+                <label className="text-xs text-gray-500 uppercase">Tone</label>
+                <p className="text-sm text-gray-600 line-clamp-3">{p.tone}</p>
+            </div>
+
+            <div className="flex gap-2 flex-wrap items-center">
+                <button
+                    onClick={() => handleEdit(p)}
+                    className="bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded hover:bg-gray-300"
+                >
+                    Edit
+                </button>
+
+                {!p.isActive && (
+                    <>
+                        <button
+                            onClick={() => handleActivate(p._id)}
+                            className="bg-green-100 text-green-700 text-xs px-3 py-1.5 rounded hover:bg-green-200"
+                        >
+                            Set Active
+                        </button>
+                        <button
+                            onClick={() => handleDelete(p._id)}
+                            className="bg-red-100 text-red-600 text-xs px-3 py-1.5 rounded hover:bg-red-200"
+                        >
+                            Delete
+                        </button>
+                    </>
+                )}
+            </div>
+        </div>
+    );
 
     return (
         <div className="p-6">
@@ -102,72 +164,28 @@ const Personalities = () => {
             </div>
 
             <p className="text-gray-600 mb-6">
-                Create and manage Clicky's personalities. Assign default modes for Mini (AIRA) vs Full (REX).
+                Manage distinct personalities for REX (Full Mode) and AIRA (Mini Mode).
+                One active persona per type.
             </p>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {(personalities || []).map(p => (
-                    <div
-                        key={p._id}
-                        className={`bg-white rounded-lg shadow p-5 border-2 ${p.isActive ? 'border-green-500' : 'border-transparent'}`}
-                    >
-                        <div className="flex justify-between items-start mb-3">
-                            <div>
-                                <h3 className="text-lg font-semibold">{p.name}</h3>
-                                {p.defaultMode && (
-                                    <span className={`text-xs px-2 py-0.5 rounded-full mr-2 ${p.defaultMode === 'mini' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800'}`}>
-                                        {p.defaultMode === 'mini' ? 'Mini Mode (Default)' : 'Full Mode (Default)'}
-                                    </span>
-                                )}
-                            </div>
-                            {p.isActive && (
-                                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full whitespace-nowrap">
-                                    Active Legacy
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="mb-3">
-                            <label className="text-xs text-gray-500 uppercase">Greeting</label>
-                            <p className="text-sm text-gray-700 line-clamp-2">{p.greeting}</p>
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="text-xs text-gray-500 uppercase">Tone</label>
-                            <p className="text-sm text-gray-600 line-clamp-3">{p.tone}</p>
-                        </div>
-
-                        <div className="flex gap-2 flex-wrap">
-                            <button
-                                onClick={() => handleEdit(p)}
-                                className="bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded hover:bg-gray-300"
-                            >
-                                Edit
-                            </button>
-                            {!p.isActive && (
-                                <button
-                                    onClick={() => handleDelete(p._id)}
-                                    className="bg-red-100 text-red-600 text-xs px-3 py-1.5 rounded hover:bg-red-200"
-                                >
-                                    Delete
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                ))}
-
-                {(!personalities || personalities.length === 0) && (
-                    <div className="col-span-full text-center py-12 bg-gray-50 rounded-lg">
-                        <p className="text-gray-500 mb-4">No personalities created yet.</p>
-                        <button
-                            onClick={openNewModal}
-                            className="text-indigo-600 hover:underline"
-                        >
-                            Create your first personality
-                        </button>
-                    </div>
-                )}
+            {/* REX SECTION */}
+            <div className="mb-8">
+                <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">REX Personas (Execution)</h2>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {rexPersonas.map(p => <PersonalityCard key={p._id} p={p} />)}
+                    {rexPersonas.length === 0 && <p className="text-gray-400 italic">No REX personas found.</p>}
+                </div>
             </div>
+
+            {/* AIRA SECTION */}
+            <div className="mb-8">
+                <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">AIRA Personas (Memory)</h2>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {airaPersonas.map(p => <PersonalityCard key={p._id} p={p} />)}
+                    {airaPersonas.length === 0 && <p className="text-gray-400 italic">No AIRA personas found.</p>}
+                </div>
+            </div>
+
 
             {/* Modal */}
             {showModal && (
@@ -178,6 +196,21 @@ const Personalities = () => {
                         </h2>
 
                         <form onSubmit={handleSubmit}>
+                            {/* TYPE SELECTOR */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Persona Type
+                                </label>
+                                <select
+                                    value={formData.type}
+                                    onChange={e => setFormData({ ...formData, type: e.target.value })}
+                                    className="w-full border rounded-lg px-3 py-2 bg-white"
+                                >
+                                    <option value="REX">REX (Execution)</option>
+                                    <option value="AIRA">AIRA (Memory)</option>
+                                </select>
+                            </div>
+
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Name
@@ -187,7 +220,7 @@ const Personalities = () => {
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     className="w-full border rounded-lg px-3 py-2"
-                                    placeholder="e.g., AIRA, REX"
+                                    placeholder="e.g., Ultra REX, Calm AIRA"
                                     required
                                 />
                             </div>
@@ -205,7 +238,7 @@ const Personalities = () => {
                                     <option value="mini">Mini Mode (AIRA default)</option>
                                     <option value="full">Full Mode (REX default)</option>
                                 </select>
-                                <p className="text-xs text-gray-500 mt-1">If set, this personality will be used automatically for the selected mode.</p>
+                                <p className="text-xs text-gray-500 mt-1">Usually: AIRA to Mini, REX to Full</p>
                             </div>
 
                             <div className="mb-4">
@@ -217,7 +250,7 @@ const Personalities = () => {
                                     value={formData.greeting}
                                     onChange={e => setFormData({ ...formData, greeting: e.target.value })}
                                     className="w-full border rounded-lg px-3 py-2"
-                                    placeholder="Hello! I'm Clicky..."
+                                    placeholder="Hello!..."
                                     required
                                     maxLength={500}
                                 />
@@ -231,7 +264,7 @@ const Personalities = () => {
                                     value={formData.tone}
                                     onChange={e => setFormData({ ...formData, tone: e.target.value })}
                                     className="w-full border rounded-lg px-3 py-2 h-32"
-                                    placeholder="Describe response style..."
+                                    placeholder="Describe style..."
                                     required
                                     maxLength={2000}
                                 />

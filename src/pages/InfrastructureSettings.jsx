@@ -13,7 +13,7 @@ const InfrastructureSettings = () => {
     const fetchConfig = async () => {
         try {
             const res = await api.get('/admin/config');
-            setConfig(res.data);
+            setConfig(res || {});
             setLoading(false);
         } catch (err) {
             console.error(err);
@@ -31,7 +31,7 @@ const InfrastructureSettings = () => {
             }
 
             const res = await api.post('/admin/config', { key, value });
-            setConfig(prev => ({ ...prev, [key]: value }));
+            setConfig(prev => ({ ...(prev || {}), [key]: value }));
             setMessage('Saved successfully');
             setTimeout(() => setMessage(null), 3000);
         } catch (err) {
@@ -55,8 +55,8 @@ const InfrastructureSettings = () => {
                         <input
                             type="text"
                             style={{ flex: 1, padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
-                            value={config['TRACK_SERVER_BASE_URL'] || ''}
-                            onChange={(e) => setConfig({ ...config, 'TRACK_SERVER_BASE_URL': e.target.value })}
+                            value={(config && config['TRACK_SERVER_BASE_URL']) || ''}
+                            onChange={(e) => setConfig({ ...(config || {}), 'TRACK_SERVER_BASE_URL': e.target.value })}
                             placeholder="https://track.example.com"
                         />
                         <button
