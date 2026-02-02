@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clicktory Checklist Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #1c1e21;
+            --card-bg: #ffffff;
+            --border-color: #dadde1;
+            --header-bg: #2d3436;
+            --header-text: #ffffff;
+            --primary-green: #00b894;
+            --highlight-bg: #e6fffa;
+            --error-bg: #ffe5e5;
+            --error-text: #d63031;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .error-banner {
+            display: none;
+            background: var(--error-bg);
+            color: var(--error-text);
+            padding: 16px 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .error-banner.show {
+            display: block;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 160px repeat(5, 1fr);
+            gap: 12px;
+            overflow-x: auto;
+            border-radius: 8px;
+            background: #fff;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-cell {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 6px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .row-header {
+            background-color: #636e72;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        .cell {
+            background-color: #fdfdfd;
+            border: 1px solid #f1f1f1;
+            border-radius: 6px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 120px;
+            transition: background-color 0.2s;
+        }
+
+        .item {
+            font-size: 0.8em;
+            padding: 8px;
+            border-radius: 6px;
+            position: relative;
+            background: white;
+            border: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            z-index: 10;
+        }
+
+        .item.pending {
+            border-left: 4px solid #b2bec3;
+            color: #636e72;
+        }
+
+        .item.in-progress {
+            background-color: #fff5e6;
+            border-left: 4px solid #f39c12;
+            color: #945c00;
+        }
+
+        .item.done {
+            background-color: var(--highlight-bg);
+            border-left: 4px solid var(--primary-green);
+            color: #006266;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-name {
+            font-weight: 600;
+        }
+
+        .progress-circle {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid #dfe6e9;
+        }
+
+        .item.in-progress .progress-circle {
+            background: conic-gradient(#f39c12 0deg 180deg, transparent 180deg);
+            border-color: #f39c12;
+        }
+
+        .item.done .progress-circle {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+
+        .progress-text {
+            font-size: 0.75em;
+            color: #aaa;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .item.in-progress .progress-text {
+            color: #f39c12;
+            font-weight: 600;
+        }
+
+        .item.done .progress-text {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        .repo-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .repo-badge {
+            font-size: 0.65em;
+            background: #e3e8eb;
+            color: #5a6c7d;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .item.in-progress .repo-badge {
+            background: #ffe5cc;
+            color: #945c00;
+        }
+
+        .item.done .repo-badge {
+            background: #c3f5e8;
+            color: #006d5b;
+        }
+
+        .edit-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(45, 52, 54, 0.8);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.7em;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 5;
+        }
+
+        .item:hover .edit-btn {
+            opacity: 1;
+        }
+
+        .edit-btn:hover {
+            background: rgba(45, 52, 54, 1);
+        }
+
+        /* Tooltip */
+        .detail-tooltip {
+            visibility: hidden;
+            width: 320px;
+            background: linear-gradient(135deg, #2d3436 0%, #1e272e 100%);
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 14px 16px;
+            position: absolute;
+            z-index: 100;
+            top: 110%;
+            left: 50%;
+            margin-left: -160px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+            line-height: 1.6;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-tooltip::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent #1e272e transparent;
+        }
+
+        .item:hover .detail-tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(4px);
+        }
+
+        .tooltip-header {
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #74b9ff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 6px;
+        }
+
+        .tooltip-detail {
+            margin-bottom: 8px;
+            color: #dfe6e9;
+        }
+
+        .tooltip-repos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tooltip-repo {
+            background: rgba(116, 185, 255, 0.2);
+            color: #74b9ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .tooltip-progress {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: #55efc4;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #2d3436;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #636e72;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dfe6e9;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.9em;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .repos-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid #dfe6e9;
+            border-radius: 6px;
+        }
+
+        .repos-input label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #f0f2f5;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .repos-input input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #00b894;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #00a380;
+        }
+
+        .btn-danger {
+            background: #d63031;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c02829;
+        }
+
+        .btn-secondary {
+            background: #b2bec3;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #a0acb3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Clicktory Maturity Status</h1>
+
+    <div id="errorBanner" class="error-banner"></div>
+
+    <div id="grid" class="container">
+        <div style="grid-column: 1/-1; text-align:center; padding: 40px;">Loading...</div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Item</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="editForm">
+                <div class="form-group">
+                    <label>Title (Read-only)</label>
+                    <input type="text" id="editTitle" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editDetail" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Repositories</label>
+                    <div class="repos-input" id="editRepos">
+                        <label><input type="checkbox" value="appclient"> appclient</label>
+                        <label><input type="checkbox" value="appserver"> appserver</label>
+                        <label><input type="checkbox" value="adminclient"> adminclient</label>
+                        <label><input type="checkbox" value="adminserver"> adminserver</label>
+                        <label><input type="checkbox" value="botclient"> botclient</label>
+                        <label><input type="checkbox" value="botserver"> botserver</label>
+                        <label><input type="checkbox" value="trackserver"> trackserver</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Progress (%)</label>
+                    <input type="number" id="editProgress" min="0" max="100" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="deleteItem()">Delete</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Since this is served from adminclient, API calls go to adminserver
+        const API_BASE = 'http://localhost:5001/api/admin';
+        const phaseMap = {
+            "Phase_1_Foundation": "Phase 1: Foundation",
+            "Phase_2_Engagement": "Phase 2: Engagement",
+            "Phase_3_Intelligence": "Phase 3: Intelligence",
+            "Phase_4_Growth": "Phase 4: Growth",
+            "Phase_5_Scale": "Phase 5: Scale"
+        };
+        const phaseKeys = Object.keys(phaseMap);
+        let currentEditItem = null;
+
+        // Get token from localStorage
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+
+        // Show error banner
+        function showError(message) {
+            const banner = document.getElementById('errorBanner');
+            banner.textContent = message;
+            banner.classList.add('show');
+        }
+
+        // API call with auth
+        async function apiCall(endpoint, options = {}) {
+            const token = getToken();
+            if (!token) {
+                showError('❌ Authentication failed: No token found. Please log in to the admin portal first.');
+                throw new Error('No token');
+            }
+
+            const headers = {
+                'x-auth-token': token,
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+
+            const response = await fetch(API_BASE + endpoint, {
+                ...options,
+                headers
+            });
+
+            if (response.status === 401) {
+                showError('❌ Authentication failed: Invalid or expired token. Please log in again.');
+                throw new Error('Unauthorized');
+            }
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        async function loadData() {
+            try {
+                const data = await apiCall('/checklist');
+                renderGrid(data);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                if (error.message !== 'No token' && error.message !== 'Unauthorized') {
+                    showError(`❌ Failed to load checklist: ${error.message}`);
+                }
+                document.getElementById('grid').innerHTML = '<div style="grid-column: 1/-1; text-align:center; color: #d63031; padding: 40px;">Failed to load data. Check console for details.</div>';
+            }
+        }
+
+        function renderGrid(data) {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            // Top Left Corner
+            const corner = document.createElement('div');
+            corner.className = 'header-cell';
+            corner.innerText = 'Area';
+            grid.appendChild(corner);
+
+            // Phase Headers
+            phaseKeys.forEach(key => {
+                const header = document.createElement('div');
+                header.className = 'header-cell';
+                header.innerText = phaseMap[key];
+                grid.appendChild(header);
+            });
+
+            // Rows
+            const areas = Object.keys(data);
+
+            areas.forEach(area => {
+                // Row Header
+                const rowHeader = document.createElement('div');
+                rowHeader.className = 'header-cell row-header';
+                rowHeader.innerText = area.replace(/([A-Z])/g, ' $1').trim();
+                grid.appendChild(rowHeader);
+
+                // Cells for this row (Phases)
+                phaseKeys.forEach(phaseKey => {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+
+                    const items = data[area][phaseKey];
+                    if (items) {
+                        Object.entries(items).forEach(([key, val]) => {
+                            if (val.inactive) return; // Skip inactive items
+
+                            const itemDiv = document.createElement('div');
+
+                            // Determine status class
+                            let statusClass = 'pending';
+                            if (val.progress === 100 || val.status === 'Done') {
+                                statusClass = 'done';
+                            } else if (val.progress > 0 && val.progress < 100) {
+                                statusClass = 'in-progress';
+                            }
+
+                            itemDiv.className = `item ${statusClass}`;
+                            itemDiv.dataset.category = area;
+                            itemDiv.dataset.phase = phaseKey;
+                            itemDiv.dataset.itemKey = key;
+                            itemDiv.dataset.detail = val.detail || '';
+                            itemDiv.dataset.repos = JSON.stringify(val.repos || []);
+                            itemDiv.dataset.progress = val.progress || 0;
+
+                            const itemName = key.replace(/([A-Z])/g, ' $1').trim();
+
+                            // Repository badges
+                            let repoBadges = '';
+                            if (val.repos && val.repos.length > 0) {
+                                repoBadges = '<div class="repo-badges">' +
+                                    val.repos.map(r => `<span class="repo-badge">${r}</span>`).join('') +
+                                    '</div>';
+                            }
+
+                            // Tooltip repository list
+                            let tooltipRepos = '';
+                            if (val.repos && val.repos.length > 0) {
+                                tooltipRepos = '<div class="tooltip-repos">' +
+                                    val.repos.map(r => `<span class="tooltip-repo">${r}</span>`).join('') +
+                                    '</div>';
+                            }
+
+                            itemDiv.innerHTML = `
+                                <button class="edit-btn" onclick="openEditModal(this.parentElement)">✎ Edit</button>
+                                <div class="item-row">
+                                    <span class="item-name">${itemName}</span>
+                                    <span class="progress-circle"></span>
+                                </div>
+                                ${repoBadges}
+                                <div class="progress-text">${val.progress}%</div>
+                                <div class="detail-tooltip">
+                                    <div class="tooltip-header">${itemName}</div>
+                                    <div class="tooltip-detail">${val.detail || 'No detail provided.'}</div>
+                                    ${tooltipRepos}
+                                    <div class="tooltip-progress">Progress: ${val.progress}%</div>
+                                </div>
+                            `;
+
+                            cell.appendChild(itemDiv);
+                        });
+                    }
+
+                    grid.appendChild(cell);
+                });
+            });
+        }
+
+        function openEditModal(itemElement) {
+            currentEditItem = itemElement;
+
+            const itemKey = itemElement.dataset.itemKey;
+            const detail = itemElement.dataset.detail;
+            const repos = JSON.parse(itemElement.dataset.repos);
+            const progress = itemElement.dataset.progress;
+
+            document.getElementById('editTitle').value = itemKey.replace(/([A-Z])/g, ' $1').trim();
+            document.getElementById('editDetail').value = detail;
+            document.getElementById('editProgress').value = progress;
+
+            // Set repos checkboxes
+            const repoCheckboxes = document.querySelectorAll('#editRepos input[type="checkbox"]');
+            repoCheckboxes.forEach(cb => {
+                cb.checked = repos.includes(cb.value);
+            });
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+            currentEditItem = null;
+        }
+
+        async function deleteItem() {
+            if (!currentEditItem || !confirm('Are you sure you want to delete this item?')) return;
+
+            const category = currentEditItem.dataset.category;
+            const phase = currentEditItem.dataset.phase;
+            const itemKey = currentEditItem.dataset.itemKey;
+
+            try {
+                await apiCall(`/checklist/${category}/${phase}/${itemKey}`, { method: 'DELETE' });
+                alert('Item deleted successfully');
+                closeModal();
+                loadData();
+            } catch (error) {
+                alert('Failed to delete item: ' + error.message);
+            }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!currentEditItem) return;
+
+            const category = currentEditItem.dataset.category;
+            const phase = currentEditItem.dataset.phase;
+            const itemKey = currentEditItem.dataset.itemKey;
+
+            const detail = document.getElementById('editDetail').value;
+            const progress = parseInt(document.getElementById('editProgress').value);
+
+            const repos = Array.from(document.querySelectorAll('#editRepos input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+
+            try {
+                await apiCall(`/checklist/${category}/${phase}/${itemKey}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        detail,
+                        progress,
+                        repos,
+                        status: progress === 100 ? 'Done' : (progress > 0 ? 'In Progress' : 'Pending')
+                    })
+                });
+
+                alert('Item updated successfully');
+                closeModal();
+                loadData();
+            } catch (error) {
+                alert('Failed to update item: ' + error.message);
+            }
+        });
+
+        // Close modal on click outside
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') {
+                closeModal();
+            }
+        });
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+
+</html>
