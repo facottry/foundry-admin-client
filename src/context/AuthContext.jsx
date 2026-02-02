@@ -28,6 +28,11 @@ export const AuthProvider = ({ children }) => {
         const res = await api.post('/auth/login', { email, password });
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
+
+        // Save API base for checklist.html to use
+        const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/admin';
+        localStorage.setItem('apiBase', apiBase);
+
         setUser(res.data.user);
         return res.data.user;
     };

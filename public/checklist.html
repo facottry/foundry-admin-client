@@ -524,8 +524,10 @@
     </div>
 
     <script>
-        // Since this is served from adminclient, API calls go to adminserver
-        const API_BASE = 'http://localhost:5001/api/admin';
+        // Read API base from localStorage (set by admin portal)
+        const API_BASE = localStorage.getItem('apiBase');
+
+        // Phase mapping
         const phaseMap = {
             "Phase_1_Foundation": "Phase 1: Foundation",
             "Phase_2_Engagement": "Phase 2: Engagement",
@@ -580,6 +582,19 @@
         }
 
         async function loadData() {
+            // Check if API base is configured
+            if (!API_BASE) {
+                const grid = document.getElementById('grid');
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align:center; padding: 40px; color: #636e72;">
+                        <h3 style="color: #d63031; margin-bottom: 16px;">⚙️ API Not Configured</h3>
+                        <p style="margin-bottom: 8px;">The admin API endpoint is not configured.</p>
+                        <p style="font-size: 0.9em; color: #95a5a6;">Please log in to the admin portal first to set the API endpoint.</p>
+                    </div>
+                `;
+                return;
+            }
+
             try {
                 const data = await apiCall('/checklist');
                 renderGrid(data);
