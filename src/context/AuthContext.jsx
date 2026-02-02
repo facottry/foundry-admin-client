@@ -14,6 +14,12 @@ export const AuthProvider = ({ children }) => {
                 try {
                     const storedUser = localStorage.getItem('user');
                     if (storedUser) setUser(JSON.parse(storedUser));
+
+                    // Ensure API base is set even on refresh
+                    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/admin';
+                    if (!localStorage.getItem('apiBase')) {
+                        localStorage.setItem('apiBase', apiBase);
+                    }
                 } catch (err) {
                     localStorage.removeItem('token');
                 }
