@@ -104,6 +104,7 @@ const DashboardAdmin = () => {
                             </h1>
                             <div style={{ fontSize: '0.85rem', color: '#999', marginTop: '4px' }}>
                                 Last updated: {lastRefresh.toLocaleTimeString()}
+                                <span style={{ marginLeft: '12px', color: '#ccc' }}>• v1.0.1</span>
                             </div>
                         </div>
                         <button
