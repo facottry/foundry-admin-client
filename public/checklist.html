@@ -525,7 +525,13 @@
 
     <script>
         // Read API base from localStorage (set by admin portal)
-        const API_BASE = localStorage.getItem('apiBase');
+        let API_BASE = localStorage.getItem('apiBase');
+        
+        // Fix: Ensure API_BASE points to /admin even if set to /api
+        if (API_BASE) {
+            if (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
+            if (!API_BASE.endsWith('/admin')) API_BASE += '/admin';
+        }
 
         // Phase mapping
         const phaseMap = {
