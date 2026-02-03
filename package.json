@@ -23,7 +23,7 @@
         "build": "vite build",
         "preview": "vite preview",
         "commit": "git add . && git commit -m 'update' && git push origin main",
-        "production": "git push -f origin main:PRODUCTION_DEPLOYMENT"
+        "production": "git push --force-with-lease origin main:PRODUCTION_DEPLOYMENT"
     },
     "browserslist": {
         "production": [
