@@ -16,6 +16,7 @@ import ChangePassword from './pages/ChangePassword';
 import Newsletters from './pages/Newsletters';
 import NewsletterEditor from './pages/NewsletterEditor';
 import Personalities from './pages/Personalities';
+import ServerHealth from './pages/ServerHealth';
 import './index.css';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
                         <Route path="/newsletters" element={<Newsletters />} />
                         <Route path="/newsletters/:id" element={<NewsletterEditor />} /> {/* :id can be 'new' */}
                         <Route path="/personalities" element={<Personalities />} />
+                        <Route path="/server-health" element={<ServerHealth />} />
                     </Route>
 
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
