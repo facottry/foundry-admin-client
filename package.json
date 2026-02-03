@@ -1,6 +1,6 @@
 {
     "name": "adminclient",
-    "version": "1.0.1",
+    "version": "3.3.3",
     "private": true,
     "type": "module",
     "dependencies": {
