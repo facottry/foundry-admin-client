@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 
+const PUBLIC_APP_URL = import.meta.env.VITE_CLIENT_URL || "https://www.clicktory.in";
+
 const ProductsList = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -89,39 +91,78 @@ const ProductsList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map(product => (
-                            <tr key={product._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
-                                <td style={{ padding: '12px' }}>
-                                    <div><strong>{product.name}</strong></div>
-                                    <div style={{ fontSize: '0.8rem', color: '#888' }}>{product.tagline}</div>
-                                </td>
-                                <td style={{ padding: '12px' }}>
-                                    <Link to={`/founders/${product.owner?._id || product.owner_user_id?._id}`} style={{ fontWeight: '500', color: '#2563eb' }}>
-                                        {product.owner?.name || product.owner_user_id?.name || 'Unknown'}
-                                    </Link>
-                                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                                        {product.owner?.email || product.owner_user_id?.email}
-                                    </div>
-                                </td>
-                                <td style={{ padding: '12px' }}>
-                                    <span style={{
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        background: product.status === 'approved' ? '#d4edda' : '#fff3cd',
-                                        color: product.status === 'approved' ? '#155724' : '#856404',
-                                        fontSize: '0.8rem'
-                                    }}>
-                                        {product.status}
-                                    </span>
-                                </td>
-                                <td style={{ padding: '12px' }}>{product.traffic_enabled ? 'ON' : 'OFF'}</td>
-                                <td style={{ padding: '12px' }}>{product.clicks_lifetime}</td>
-                                <td style={{ padding: '12px' }}>{new Date(product.created_at).toLocaleDateString()}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Link to={`/products/${product._id}`} className="btn btn-sm btn-secondary">Details</Link>
-                                </td>
-                            </tr>
-                        ))}
+                        {products.map(product => {
+                            const founder = product.owner || product.owner_user_id;
+                            const founderName = founder?.name || 'Unknown';
+                            const founderEmail = founder?.email;
+                            const founderId = founder?._id;
+                            const founderSlug = founder?.slug || founderId; // Fallback to ID if no slug (matches public route logic usually)
+
+                            return (
+                                <tr key={product._id} style={{ borderBottom: '1px solid #f9f9f9' }}>
+                                    <td style={{ padding: '12px' }}>
+                                        <div>
+                                            <a
+                                                href={`${PUBLIC_APP_URL}/product/${product.slug || product._id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ color: '#2563eb', fontWeight: 'bold', textDecoration: 'none' }}
+                                            >
+                                                {product.name}
+                                            </a>
+                                        </div>
+                                        <div style={{ fontSize: '0.8rem', color: '#888' }}>{product.tagline}</div>
+                                    </td>
+                                    <td style={{ padding: '12px' }}>
+                                        {founderId ? (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Link
+                                                    to={`/founders/${founderId}`}
+                                                    style={{ fontWeight: '500', color: '#2563eb', textDecoration: 'none' }}
+                                                >
+                                                    {founderName}
+                                                </Link>
+                                                <a
+                                                    href={`${PUBLIC_APP_URL}/founder/${founderSlug}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ color: '#64748b', display: 'flex', alignItems: 'center' }}
+                                                    title="View Public Profile"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        <polyline points="15 3 21 3 21 9"></polyline>
+                                                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        ) : (
+                                            <span style={{ fontWeight: '500' }}>{founderName}</span>
+                                        )}
+                                        <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>
+                                            {founderEmail}
+                                        </div>
+                                    </td>
+                                    <td style={{ padding: '12px' }}>
+                                        <span style={{
+                                            padding: '4px 8px',
+                                            borderRadius: '4px',
+                                            background: product.status === 'approved' ? '#d4edda' : '#fff3cd',
+                                            color: product.status === 'approved' ? '#155724' : '#856404',
+                                            fontSize: '0.8rem'
+                                        }}>
+                                            {product.status}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '12px' }}>{product.traffic_enabled ? 'ON' : 'OFF'}</td>
+                                    <td style={{ padding: '12px' }}>{product.clicks_lifetime}</td>
+                                    <td style={{ padding: '12px' }}>{new Date(product.created_at).toLocaleDateString()}</td>
+                                    <td style={{ padding: '12px' }}>
+                                        <Link to={`/products/${product._id}`} className="btn btn-sm btn-secondary">Details</Link>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
