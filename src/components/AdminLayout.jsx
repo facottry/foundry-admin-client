@@ -18,7 +18,7 @@ const AdminLayout = () => {
                 <button onClick={toggleSidebar} className="hamburger-btn">
                     ☰
                 </button>
-                <span className="brand-logo-mobile">Foundry.io</span>
+                <span className="brand-logo-mobile">www.clicktory.in</span>
             </header>
 
             <div className="layout-content">

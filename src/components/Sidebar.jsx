@@ -23,7 +23,7 @@ const Sidebar = ({ isOpen, toggleSidebar, logout }) => {
             className={`admin-sidebar ${isOpen ? 'open' : ''}`}
         >
             <div className="sidebar-header">
-                <Link to="/dashboard" className="brand-logo">Foundry.io</Link>
+                <Link to="/dashboard" className="brand-logo">www.clicktory.in</Link>
                 <button className="close-sidebar-btn md:hidden" onClick={toggleSidebar}>×</button>
             </div>
 

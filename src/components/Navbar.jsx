@@ -15,7 +15,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <div className="navbar-container">
-                <Link to="/" className="navbar-brand">Foundry.io</Link>
+                <Link to="/" className="navbar-brand">www.clicktory.in</Link>
 
                 <button
                     className="navbar-toggle"
