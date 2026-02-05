@@ -17,6 +17,10 @@ import Newsletters from './pages/Newsletters';
 import NewsletterEditor from './pages/NewsletterEditor';
 import Personalities from './pages/Personalities';
 import ServerHealth from './pages/ServerHealth';
+import ImageManager from './pages/ImageManager';
+import AIJobs from './pages/AIJobs';
+import AIJobForm from './pages/AIJobForm';
+import AIJobDetail from './pages/AIJobDetail';
 import './index.css';
 
 function App() {
@@ -43,6 +47,11 @@ function App() {
                         <Route path="/newsletters/:id" element={<NewsletterEditor />} /> {/* :id can be 'new' */}
                         <Route path="/personalities" element={<Personalities />} />
                         <Route path="/server-health" element={<ServerHealth />} />
+                        <Route path="/image-manager" element={<ImageManager />} />
+                        <Route path="/ai-jobs" element={<AIJobs />} />
+                        <Route path="/ai-jobs/new" element={<AIJobForm />} />
+                        <Route path="/ai-jobs/:id" element={<AIJobDetail />} />
+                        <Route path="/ai-jobs/:id/edit" element={<AIJobForm />} />
                     </Route>
 
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />

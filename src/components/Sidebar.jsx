@@ -11,9 +11,11 @@ const Sidebar = ({ isOpen, toggleSidebar, logout }) => {
         { path: '/founders', label: 'Founders', icon: '👥' },
         { path: '/products', label: 'Products', icon: '📦' },
         { path: '/newsletters', label: 'Newsletter', icon: '📰' },
-        { path: '/personalities', label: 'Bot Personalities', icon: '🤖' },
+        { path: '/ai-jobs', label: 'AI Jobs', icon: '🤖' },
+        { path: '/personalities', label: 'Bot Personalities', icon: '🧠' },
         { path: '/messages', label: 'Messages', icon: '✉️' },
         { path: '/server-health', label: 'Server Health', icon: '🏥' },
+        { path: '/image-manager', label: 'Image Manager', icon: '🎨' },
         { path: '/settings', label: 'Settings', icon: '⚙️' },
     ];
 
