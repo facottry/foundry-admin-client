@@ -140,6 +140,20 @@ const AIJobs = () => {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            await api.post(`/admin/ai-jobs/${job._id}/run`);
+                                                            showNotify('Job triggered successfully', 'success');
+                                                            fetchJobs();
+                                                        } catch (err) {
+                                                            showNotify('Failed to trigger job', 'error');
+                                                        }
+                                                    }}
+                                                    className="px-3 py-1 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded border border-purple-200"
+                                                >
+                                                    Run
+                                                </button>
                                                 <Link
                                                     to={`/ai-jobs/${job._id}`}
                                                     className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded border border-blue-200"
