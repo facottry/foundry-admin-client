@@ -30,17 +30,17 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        // api.post returns response.data (which is { success, data })
-        const res = await api.post('/auth/login', { email, password });
+        // NEW: Use dedicated admin auth endpoint
+        const res = await api.post('/admin/auth/login', { email, password });
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
+        localStorage.setItem('user', JSON.stringify(res.data.admin));
 
         // Save API base for checklist.html to use
         const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/admin';
         localStorage.setItem('apiBase', apiBase);
 
-        setUser(res.data.user);
-        return res.data.user;
+        setUser(res.data.admin);
+        return res.data.admin;
     };
 
     const loginWithOTP = async (email, otp) => {
@@ -60,9 +60,22 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        // Clear localStorage
+        localStorage.clear();
+
+        // Clear sessionStorage
+        sessionStorage.clear();
+
+        // Clear all cookies
+        document.cookie.split(';').forEach(cookie => {
+            const name = cookie.split('=')[0].trim();
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        });
+
         setUser(null);
+
+        // Redirect to login page
+        window.location.href = '/login';
     };
 
     return (

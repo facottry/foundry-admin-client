@@ -1,36 +1,50 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const Sidebar = ({ isOpen, toggleSidebar, logout }) => {
+/**
+ * Permission-aware Sidebar
+ * 
+ * Renders menu items based on admin permissions.
+ * SUPER_ADMIN (permissions=['*']) sees all items.
+ * ADMIN sees only items matching their permissions.
+ */
+const Sidebar = ({ isOpen, toggleSidebar, permissions = [] }) => {
     const location = useLocation();
-
     const isActive = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`);
 
+    // Check if user is SUPER_ADMIN (wildcard permission)
+    const isSuperAdmin = permissions.includes('*');
+
+    // Menu items with required permissions
     const menuItems = [
-        { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-        { path: '/founders', label: 'Founders', icon: '👥' },
-        { path: '/products', label: 'Products', icon: '📦' },
-        { path: '/newsletters', label: 'Newsletter', icon: '📰' },
-        { path: '/ai-jobs', label: 'AI Jobs', icon: '🤖' },
-        { path: '/personalities', label: 'Bot Personalities', icon: '🧠' },
-        { path: '/messages', label: 'Messages', icon: '✉️' },
-        { path: '/server-health', label: 'Server Health', icon: '🏥' },
-        { path: '/image-manager', label: 'Image Manager', icon: '🎨' },
-        { path: '/settings', label: 'Settings', icon: '⚙️' },
+        { path: '/dashboard', label: 'Dashboard', icon: '📊', permission: 'DASHBOARD_VIEW' },
+        { path: '/founders', label: 'Founders', icon: '👥', permission: 'FOUNDERS_VIEW' },
+        { path: '/products', label: 'Products', icon: '📦', permission: 'PRODUCTS_VIEW' },
+        { path: '/newsletters', label: 'Newsletter', icon: '📰', permission: 'NEWSLETTER_EDIT' },
+        { path: '/ai-jobs', label: 'AI Jobs', icon: '🤖', permission: 'AI_JOBS_EDIT' },
+        { path: '/personalities', label: 'Bot Personalities', icon: '🧠', permission: 'BOT_PERSONALITIES_EDIT' },
+        { path: '/messages', label: 'Messages', icon: '✉️', permission: 'MESSAGES_VIEW' },
+        { path: '/server-health', label: 'Server Health', icon: '🏥', permission: 'SERVER_HEALTH_VIEW' },
+        { path: '/image-manager', label: 'Image Manager', icon: '🎨', permission: 'IMAGEMANAGER_VIEW' },
     ];
 
+    // Filter menu items based on permissions
+    const visibleMenuItems = menuItems.filter(item => {
+        if (isSuperAdmin) return true;
+        // Check for VIEW or EDIT permission (EDIT implies VIEW access)
+        const editPermission = item.permission.replace('_VIEW', '_EDIT');
+        return permissions.includes(item.permission) || permissions.includes(editPermission);
+    });
 
     return (
-        <aside
-            className={`admin-sidebar ${isOpen ? 'open' : ''}`}
-        >
+        <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
                 <Link to="/dashboard" className="brand-logo">www.clicktory.in</Link>
                 <button className="close-sidebar-btn md:hidden" onClick={toggleSidebar}>×</button>
             </div>
 
             <nav className="sidebar-nav">
-                {menuItems.map(item => (
+                {visibleMenuItems.map(item => (
                     <Link
                         key={item.path}
                         to={item.path}
@@ -44,14 +58,10 @@ const Sidebar = ({ isOpen, toggleSidebar, logout }) => {
             </nav>
 
             <div className="sidebar-footer">
-                <Link to="/change-password" className="sidebar-link">
-                    <span className="icon">🔒</span>
-                    <span className="label">Change Password</span>
+                <Link to="/settings" className={`sidebar-link ${isActive('/settings') ? 'active' : ''}`}>
+                    <span className="icon">⚙️</span>
+                    <span className="label">Settings</span>
                 </Link>
-                <button onClick={logout} className="sidebar-link logout-btn">
-                    <span className="icon">🚪</span>
-                    <span className="label">Logout</span>
-                </button>
             </div>
         </aside>
     );

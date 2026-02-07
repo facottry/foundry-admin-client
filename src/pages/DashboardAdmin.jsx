@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import KpiCard from '../components/KpiCard';
 import StatTable from '../components/StatTable';
+import { version } from '../../package.json';
 
 const DashboardAdmin = () => {
     const [activeTab, setActiveTab] = useState('overview'); // overview, tech, products
@@ -104,7 +105,7 @@ const DashboardAdmin = () => {
                             </h1>
                             <div style={{ fontSize: '0.85rem', color: '#999', marginTop: '4px' }}>
                                 Last updated: {lastRefresh.toLocaleTimeString()}
-                                <span style={{ marginLeft: '12px', color: '#ccc' }}>• v1.0.1</span>
+                                <span style={{ marginLeft: '12px', color: '#ccc' }}>• v{version}</span>
                             </div>
                         </div>
                         <button

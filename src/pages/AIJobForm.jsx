@@ -18,7 +18,7 @@ const AIJobForm = () => {
     const [dayOfWeek, setDayOfWeek] = useState(1);
     const [customCron, setCustomCron] = useState('');
     const [systemPrompt, setSystemPrompt] = useState('');
-    const [aiModel, setAiModel] = useState('gemini-1.5-flash');
+    const [aiModel, setAiModel] = useState('gemini-2.0-flash');
     const [autoSend, setAutoSend] = useState(false);
     const [subjectTemplate, setSubjectTemplate] = useState('{{title}}');
     const [activateOnSave, setActivateOnSave] = useState(false);
@@ -46,7 +46,7 @@ const AIJobForm = () => {
             setDayOfWeek(job.schedule?.dayOfWeek || 1);
             setCustomCron(job.schedule?.customCron || '');
             setSystemPrompt(job.config?.systemPrompt || '');
-            setAiModel(job.config?.aiModel || 'gemini-1.5-flash');
+            setAiModel(job.config?.aiModel || 'gemini-2.0-flash');
             setAutoSend(job.config?.autoSend || false);
             setSubjectTemplate(job.config?.subjectTemplate || '{{title}}');
         } catch (err) {
@@ -142,6 +142,14 @@ const AIJobForm = () => {
         }
     };
 
+    const handleFrequencyChange = (e) => {
+        const val = e.target.value;
+        setFrequency(val);
+        if (val === 'CUSTOM' && !customCron) {
+            setCustomCron('0 * * * *'); // Default: Every hour
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
@@ -200,10 +208,11 @@ const AIJobForm = () => {
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">Schedule</h2>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
+                                {/* ... (inside render) */}
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
                                 <select
                                     value={frequency}
-                                    onChange={e => setFrequency(e.target.value)}
+                                    onChange={handleFrequencyChange}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 >
                                     <option value="DAILY">Daily</option>
@@ -285,8 +294,10 @@ const AIJobForm = () => {
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 >
                                     <optgroup label="Gemini">
-                                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast)</option>
-                                        <option value="gemini-1.5-pro">Gemini 1.5 Pro (Quality)</option>
+                                        <option value="gemini-2.0-flash">Gemini 2.0 Flash (Fast)</option>
+                                        <option value="gemini-2.0-flash-lite-001">Gemini 2.0 Flash Lite (Efficient)</option>
+                                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Latest)</option>
+                                        <option value="gemini-2.5-pro">Gemini 2.5 Pro (Reasoning)</option>
                                     </optgroup>
                                     <optgroup label="OpenAI">
                                         <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>

@@ -114,6 +114,20 @@ const AIJobDetail = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        await api.post(`/admin/ai-jobs/${id}/run`);
+                                        showNotify('Job triggered successfully', 'success');
+                                        fetchData();
+                                    } catch (err) {
+                                        showNotify('Failed to trigger job', 'error');
+                                    }
+                                }}
+                                className="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700"
+                            >
+                                Run Now
+                            </button>
                             <Link
                                 to={`/ai-jobs/${id}/edit`}
                                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
@@ -132,118 +146,118 @@ const AIJobDetail = () => {
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Overview */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Overview</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                            <div className="text-sm text-gray-500">Schedule</div>
-                            <div className="font-medium text-gray-900">{formatSchedule(job.schedule)}</div>
+            {/* Overview */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Overview</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <div className="text-sm text-gray-500">Schedule</div>
+                        <div className="font-medium text-gray-900">{formatSchedule(job.schedule)}</div>
+                    </div>
+                    <div>
+                        <div className="text-sm text-gray-500">Next Run</div>
+                        <div className="font-medium text-gray-900">
+                            {job.stats?.nextRunAt && job.status === 'ACTIVE'
+                                ? new Date(job.stats.nextRunAt).toLocaleString()
+                                : '-'
+                            }
                         </div>
-                        <div>
-                            <div className="text-sm text-gray-500">Next Run</div>
-                            <div className="font-medium text-gray-900">
-                                {job.stats?.nextRunAt && job.status === 'ACTIVE'
-                                    ? new Date(job.stats.nextRunAt).toLocaleString()
-                                    : '-'
-                                }
-                            </div>
+                    </div>
+                    <div>
+                        <div className="text-sm text-gray-500">Last Successful Run</div>
+                        <div className="font-medium text-gray-900">
+                            {job.stats?.lastRunAt
+                                ? new Date(job.stats.lastRunAt).toLocaleString()
+                                : 'Never'
+                            }
                         </div>
-                        <div>
-                            <div className="text-sm text-gray-500">Last Successful Run</div>
-                            <div className="font-medium text-gray-900">
-                                {job.stats?.lastRunAt
-                                    ? new Date(job.stats.lastRunAt).toLocaleString()
-                                    : 'Never'
-                                }
-                            </div>
-                        </div>
-                        <div>
-                            <div className="text-sm text-gray-500">AI Model</div>
-                            <div className="font-medium text-gray-900">{job.config?.aiModel || '-'}</div>
-                        </div>
+                    </div>
+                    <div>
+                        <div className="text-sm text-gray-500">AI Model</div>
+                        <div className="font-medium text-gray-900">{job.config?.aiModel || '-'}</div>
                     </div>
                 </div>
+            </div>
 
-                {/* Summary Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="bg-white rounded-lg p-4 border border-gray-200">
-                        <div className="text-2xl font-bold text-gray-900">{job.stats?.totalRuns || 0}</div>
-                        <div className="text-sm text-gray-500">Total Runs</div>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 border border-gray-200">
-                        <div className="text-2xl font-bold text-green-600">{getSuccessRate()}%</div>
-                        <div className="text-sm text-gray-500">Success Rate</div>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 border border-gray-200">
-                        <div className="text-2xl font-bold text-blue-600">{job.config?.autoSend ? 'Yes' : 'No'}</div>
-                        <div className="text-sm text-gray-500">Auto-Send</div>
-                    </div>
+            {/* Summary Stats */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="text-2xl font-bold text-gray-900">{job.stats?.totalRuns || 0}</div>
+                    <div className="text-sm text-gray-500">Total Runs</div>
                 </div>
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="text-2xl font-bold text-green-600">{getSuccessRate()}%</div>
+                    <div className="text-sm text-gray-500">Success Rate</div>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="text-2xl font-bold text-blue-600">{job.config?.autoSend ? 'Yes' : 'No'}</div>
+                    <div className="text-sm text-gray-500">Auto-Send</div>
+                </div>
+            </div>
 
-                {/* Execution History */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200">
-                        <h2 className="text-lg font-semibold text-gray-900">Execution History</h2>
-                    </div>
-                    {runs.length === 0 ? (
-                        <div className="p-12 text-center text-gray-500">No runs yet.</div>
-                    ) : (
-                        <table className="w-full">
-                            <thead className="bg-gray-50 border-b border-gray-200">
-                                <tr>
-                                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Run Time</th>
-                                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Generated</th>
-                                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Sent</th>
-                                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Recipients</th>
-                                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Result</th>
+            {/* Execution History */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-900">Execution History</h2>
+                </div>
+                {runs.length === 0 ? (
+                    <div className="p-12 text-center text-gray-500">No runs yet.</div>
+                ) : (
+                    <table className="w-full">
+                        <thead className="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Run Time</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Generated</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Sent</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Recipients</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {runs.map(run => (
+                                <tr key={run._id} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                        {new Date(run.startedAt).toLocaleString()}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {run.generated ? (
+                                            run.newsletterId ? (
+                                                <Link
+                                                    to={`/newsletters/${run.newsletterId._id || run.newsletterId}`}
+                                                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                                                >
+                                                    Yes → View
+                                                </Link>
+                                            ) : (
+                                                <span className="text-green-600 text-sm">Yes</span>
+                                            )
+                                        ) : (
+                                            <span className="text-gray-400 text-sm">No</span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm">
+                                        {run.sent ? (
+                                            <span className="text-green-600">Yes</span>
+                                        ) : (
+                                            <span className="text-gray-400">No</span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">{run.recipientCount || '-'}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={getStatusBadge(run.status)}>{run.status}</span>
+                                        {run.error && (
+                                            <p className="text-xs text-red-500 mt-1 max-w-xs truncate" title={run.error}>
+                                                {run.error}
+                                            </p>
+                                        )}
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {runs.map(run => (
-                                    <tr key={run._id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 text-sm text-gray-900">
-                                            {new Date(run.startedAt).toLocaleString()}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {run.generated ? (
-                                                run.newsletterId ? (
-                                                    <Link
-                                                        to={`/newsletters/${run.newsletterId._id || run.newsletterId}`}
-                                                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                                                    >
-                                                        Yes → View
-                                                    </Link>
-                                                ) : (
-                                                    <span className="text-green-600 text-sm">Yes</span>
-                                                )
-                                            ) : (
-                                                <span className="text-gray-400 text-sm">No</span>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm">
-                                            {run.sent ? (
-                                                <span className="text-green-600">Yes</span>
-                                            ) : (
-                                                <span className="text-gray-400">No</span>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">{run.recipientCount || '-'}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={getStatusBadge(run.status)}>{run.status}</span>
-                                            {run.error && (
-                                                <p className="text-xs text-red-500 mt-1 max-w-xs truncate" title={run.error}>
-                                                    {run.error}
-                                                </p>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
-                </div>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
         </div>
     );

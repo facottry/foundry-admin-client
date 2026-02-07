@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import AuthContext from '../context/AuthContext';
 
 const AdminLayout = () => {
-    const { logout } = useContext(AuthContext);
+    const { logout, user } = useContext(AuthContext);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const toggleSidebar = () => {
@@ -25,7 +25,7 @@ const AdminLayout = () => {
                 <Sidebar
                     isOpen={isSidebarOpen}
                     toggleSidebar={toggleSidebar}
-                    logout={logout}
+                    permissions={user?.permissions || []}
                 />
 
                 <main className="main-content">

@@ -106,16 +106,27 @@ const NewsletterEditor = () => {
         <div className="min-h-screen bg-white flex flex-col w-full">
             {/* Sticky Professional Header */}
             <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-8 py-4 flex justify-between items-center sticky top-0 z-50">
-                <div className="flex-1">
-                    <input
-                        type="text"
-                        placeholder="Untitled Story"
-                        value={formData.title}
-                        onChange={e => setFormData({ ...formData, title: e.target.value })}
-                        className="text-2xl font-serif font-bold text-gray-900 border-none focus:ring-0 bg-transparent placeholder-gray-300 w-full p-0"
-                    />
-                    <div className="text-xs text-gray-400 mt-1 font-mono">
-                        {isNew ? 'New Draft' : `${formData.status || 'DRAFT'} • ${formData.slug || 'Using ID'}`}
+                <div className="flex items-center gap-4 flex-1">
+                    <button
+                        onClick={() => navigate('/newsletters')}
+                        className="text-gray-400 hover:text-gray-900 transition p-2 -ml-2 rounded-full hover:bg-gray-100"
+                        title="Back to Campaigns"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </button>
+                    <div className="flex-1">
+                        <input
+                            type="text"
+                            placeholder="Untitled Story"
+                            value={formData.title}
+                            onChange={e => setFormData({ ...formData, title: e.target.value })}
+                            className="text-2xl font-serif font-bold text-gray-900 border-none focus:ring-0 bg-transparent placeholder-gray-300 w-full p-0"
+                        />
+                        <div className="text-xs text-gray-400 mt-1 font-mono">
+                            {isNew ? 'New Draft' : `${formData.status || 'DRAFT'} • ${formData.slug || 'Using ID'}`}
+                        </div>
                     </div>
                 </div>
 
@@ -148,8 +159,8 @@ const NewsletterEditor = () => {
             </div>
 
             {/* Editor Container - Full Width but readable center */}
-            <div className="flex-1 w-full max-w-[1920px] mx-auto flex flex-col items-center">
-                <div className="w-full h-full flex-1">
+            <div className="flex-1 w-full flex flex-col items-center bg-gray-50/50">
+                <div className="w-full max-w-5xl mx-auto flex-1 bg-white shadow-sm min-h-screen my-8 border border-gray-100 rounded-xl overflow-hidden">
                     <RichTextEditor
                         value={formData.html_content}
                         onChange={handleContentChange}
@@ -163,7 +174,7 @@ const NewsletterEditor = () => {
                     border-bottom: 1px solid #f0f0f0 !important;
                     padding: 12px 32px !important;
                     position: sticky;
-                    top: 73px; /* Below main header */
+                    top: 85px; /* Adjust for header height */
                     background: white;
                     z-index: 40;
                     text-align: center;
@@ -173,15 +184,19 @@ const NewsletterEditor = () => {
                     font-size: 1.125rem; /* 18px */
                 }
                 .ql-editor {
-                    padding: 40px 10%; /* Responsive padding */
-                    min-height: calc(100vh - 150px);
+                    padding: 60px 80px;
+                    min-height: calc(100vh - 200px);
                     color: #292929;
-                    font-family: 'Georgia', serif; /* Medium Style */
+                    font-family: 'Georgia', serif;
+                    line-height: 1.8;
                 }
-                /* Wider editor on large screens */
-                @media (min-width: 1400px) {
+                /* Mobile adjustments */
+                @media (max-width: 768px) {
                     .ql-editor {
-                        padding: 60px 20%;
+                        padding: 30px 20px;
+                    }
+                    .ql-toolbar.ql-snow {
+                        padding: 10px !important;
                     }
                 }
             `}</style>

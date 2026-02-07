@@ -255,8 +255,10 @@ const NewsletterDashboard = () => {
                                         onChange={(e) => setAiSettings({ ...aiSettings, model: e.target.value })}
                                         className="p-2 pr-8 border border-gray-200 rounded-lg bg-gray-50 text-sm font-medium focus:ring-indigo-500"
                                     >
-                                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast)</option>
-                                        <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep)</option>
+                                        <option value="gemini-2.0-flash">Gemini 2.0 Flash (Fast)</option>
+                                        <option value="gemini-2.0-flash-lite-001">Gemini 2.0 Flash Lite (Efficient)</option>
+                                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Latest)</option>
+                                        <option value="gemini-2.5-pro">Gemini 2.5 Pro (Deep)</option>
                                     </select>
                                 </div>
                             </div>
