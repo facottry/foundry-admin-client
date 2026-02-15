@@ -21,6 +21,7 @@ import ImageManager from './pages/ImageManager';
 import AIJobs from './pages/AIJobs';
 import AIJobForm from './pages/AIJobForm';
 import AIJobDetail from './pages/AIJobDetail';
+import PromoSettings from './pages/PromoSettings';
 import './index.css';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
                         <Route path="/products/:id" element={<ProductDetail />} />
                         <Route path="/messages" element={<Messages />} />
                         <Route path="/settings" element={<Settings />} />
+                        <Route path="/promotion" element={<PromoSettings />} />
                         <Route path="/settings/infrastructure" element={<Navigate to="/settings" replace />} />
                         <Route path="/change-password" element={<ChangePassword />} />
 

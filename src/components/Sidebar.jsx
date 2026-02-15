@@ -26,6 +26,7 @@ const Sidebar = ({ isOpen, toggleSidebar, permissions = [] }) => {
         { path: '/messages', label: 'Messages', icon: '✉️', permission: 'MESSAGES_VIEW' },
         { path: '/server-health', label: 'Server Health', icon: '🏥', permission: 'SERVER_HEALTH_VIEW' },
         { path: '/image-manager', label: 'Image Manager', icon: '🎨', permission: 'IMAGEMANAGER_VIEW' },
+        { path: '/promotion', label: 'Promotion', icon: '📢', permission: 'DASHBOARD_VIEW' },
     ];
 
     // Filter menu items based on permissions

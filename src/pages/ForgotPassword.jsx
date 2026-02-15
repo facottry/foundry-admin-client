@@ -17,7 +17,7 @@ const ForgotPassword = () => {
         setLoading(true);
         setError(null);
         try {
-            await api.post('/auth/send-otp', { email });
+            await api.post('/admin/auth/send-otp', { email });
             setStep(2);
             setMessage('OTP sent to your email.');
         } catch (err) {
@@ -32,7 +32,7 @@ const ForgotPassword = () => {
         setLoading(true);
         setError(null);
         try {
-            await api.post('/auth/reset-password', { email, otp, newPassword });
+            await api.post('/admin/auth/reset-password', { email, otp, newPassword });
             alert('Password reset successfully. Please login.');
             navigate('/login');
         } catch (err) {
